@@ -10,6 +10,7 @@ import { middlewareMetricsLog } from "./admin/metrics.js";
 import { handlerReset} from "./admin/reset.js";
 import { handlerChirpsValidate } from "./api/chirp.js";
 import { handlerUsersCreate } from "./api/users.js";
+import { handlerChirpsCreate } from "./api/chirps.js";
 
 const migrationClient = postgres(config.db.url, { max: 1 });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -23,11 +24,10 @@ app.use(express.json())
 
 app.get('/admin/metrics', middlewareMetricsLog)
 app.post('/admin/reset', handlerReset)
-app.post('/api/validate_chirp', (req, res, next) => {
-  Promise.resolve(handlerChirpsValidate(req, res)).catch(next);
-} )
 app.post('/api/users', handlerUsersCreate)
-app.post('/api/chirps', handleChirps)
+app.post('/api/chirps', (req, res, next) => {
+  Promise.resolve(handlerChirpsCreate(req, res)).catch(next);
+})
 
 app.get("/api/healthz", handlerReadiness);
 app.use(errorMiddleware)
