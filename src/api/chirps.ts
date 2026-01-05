@@ -1,32 +1,33 @@
 import type { Request, Response } from "express";
-import { ClientError } from "./errors.js";
+import { ClientError, NotFoundError } from "./errors.js";
 import { respondWithJSON } from "./json.js";
-import { saveChirp } from "src/db/queries/chirps.js";
+import { createChirp, getChirpById, getChirps } from "../db/queries/chirps.js";
 
 export async function handlerChirpsCreate(req: Request, res: Response) {
   type parameters = {
     body: string;
-  };
-
-  type NewChirp = {
-    body: string;
     userId: string;
-  }
+  }; 
+
 
   const params: parameters = req.body;
-  const userId = req.body.userId; 
+  const cleaned = validateChirp(params.body)
+  const chirp = await createChirp({body: cleaned, userId: params.userId})
+  respondWithJSON(res, 201, chirp)
+}
 
-  const maxChirpLength = 140;
-  if (params.body.length > maxChirpLength) {
-    
-    throw new ClientError('Chirp is too long. Max length is 140');
-    
-   
+  function validateChirp(body: string){
+    const maxChirpLength = 140;
+    if (body.length > maxChirpLength) {
+     throw new ClientError(`Chirp is too long. Max length is ${maxChirpLength}`);
+    }
+    const badWords = ["kerfuffle", "sharbert", "fornax"];
+    return getCleanedBody(body, badWords)
   }
 
-  const words = params.body.split(" ");
 
-  const badWords = ["kerfuffle", "sharbert", "fornax"];
+  function getCleanedBody(body: string, badWords: string[]){
+  const words = body.split(' ');
   for (let i = 0; i < words.length; i++) {
     const word = words[i];
     const loweredWord = word.toLowerCase();
@@ -34,10 +35,22 @@ export async function handlerChirpsCreate(req: Request, res: Response) {
       words[i] = "****";
     }
   }
-
   const cleaned = words.join(" ");
-  const newChirp = {userId: userId, body: cleaned}
-  const result = await saveChirp(newChirp)
+  return cleaned 
+}
 
-  respondWithJSON(res, 201, result);
+export async function handlerGetChirps(req: Request, res: Response){
+  const results = await getChirps();
+  return respondWithJSON(res, 200, results)
+}
+
+
+export async function handlerGetChirpById(req: Request, res: Response){
+    const  { chirpId } = req.params
+    const result = await getChirpById(chirpId)
+    if(!result){
+     throw new NotFoundError('Chirp not found')
+    }
+    return respondWithJSON(res, 200, result)
+
 }
