@@ -15,6 +15,13 @@
       "when": 1767550817145,
       "tag": "0001_nervous_killmonger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1767675072258,
+      "tag": "0002_quiet_kate_bishop",
+      "breakpoints": true
     }
   ]
 }
