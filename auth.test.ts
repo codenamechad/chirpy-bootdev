@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { makeJWT, validateJWT, hashPassword, checkPasswordHash, getBearerToken } from "./src/auth.js";
 import { AuthorizationError } from "./src/api/errors.js";
+import { Request } from "express";
 
 describe("Password Hashing", () => {
   const password1 = "correctPassword123!";
@@ -48,10 +49,18 @@ it("rejects an expired token", () => {
 });
 });
 
-describe("Test getBearerToken", () => {
-  
+describe("getBearerToken", () => {
+  it("returns the token when Authorization header is present", () => {
+    const req = {
+      get: ((name: string) => {
+        if (name === "Authorization") {
+          return "Bearer abc.123.333";
+        }
+        return undefined;
+      }) as Request["get"],
+    } as Request;
 
-
-
-
-})
+    const token = getBearerToken(req);
+    expect(token).toBe("abc.123.333");
+  });
+});

@@ -11,25 +11,41 @@ type DBConfig = {
   migrationConfig: MigrationConfig;
 }
 
-type Config = {
-  api: APIConfig;
-  db: DBConfig;
-}
-
-
 type APIConfig = {
   fileServerHits: number;
   platform: string;
+  secret: string;
   };
+
+type JWTConfig ={
+  defaultDuration:number;
+  secret: string;
+  issuer: string;
+}
+
+type Config = {
+  api: APIConfig;
+  db: DBConfig;
+  jwt: JWTConfig;
+}
+
+
+
 
 export const config: Config=  {
     api: {
       fileServerHits: 0,
-      platform: envOrThrow("PLATFORM")
+      platform: envOrThrow("PLATFORM"),
+      secret: envOrThrow("SECRET")
     },
     db: {
       url: envOrThrow("DB_URL"),
       migrationConfig: migrationConfig
+    },
+    jwt: {
+      defaultDuration: 3600,
+      secret: envOrThrow("SECRET"),
+      issuer: "chirpy"
     }
     
     
