@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { makeJWT, validateJWT, hashPassword, checkPasswordHash } from "./src/auth.js";
+import { makeJWT, validateJWT, hashPassword, checkPasswordHash, getBearerToken } from "./src/auth.js";
 import { AuthorizationError } from "./src/api/errors.js";
 
 describe("Password Hashing", () => {
@@ -47,3 +47,11 @@ it("rejects an expired token", () => {
   }).toThrow(AuthorizationError);
 });
 });
+
+describe("Test getBearerToken", () => {
+  
+
+
+
+
+})

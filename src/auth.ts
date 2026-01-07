@@ -1,7 +1,8 @@
 import * as argon2 from "argon2"
-import { AuthorizationError } from "./api/errors.js"
+import { AuthorizationError, ClientError } from "./api/errors.js"
 import jwt from "jsonwebtoken"
 import { JwtPayload } from "jsonwebtoken";
+import e, { Request } from "express";
 
 
 type payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
@@ -52,4 +53,19 @@ export function validateJWT(tokenString: string, secret: string): string{
   } catch (err) {
     throw new AuthorizationError('Invalid or expired JWT')
   }
+}
+
+
+export function getBearerToken(req: Request): string{
+    const header = req.get("Authorization");
+    if(!header){
+        throw new ClientError('Missing Authorization headers')
+    }
+    const trimmed = header.trim()
+    const splitHeader = trimmed.split(' ')
+    const filtered = splitHeader.filter(el => el !== "")
+    if(filtered.length < 2 || filtered[0] !== "Bearer"){
+        throw new AuthorizationError('Invalid token')
+    }
+    return filtered[1] 
 }
