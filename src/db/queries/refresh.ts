@@ -1,5 +1,5 @@
-import { db } from "..";
-import { refreshTokens, users } from "../schema";
+import { db } from "../index.js";
+import { refreshTokens, users } from "../schema.js";
 import { eq, isNull, gt, and} from "drizzle-orm";
 
 
@@ -29,7 +29,17 @@ export async function userForRefreshToken(token: string) {
 
     return result
 }
-
-export async function revokeRefreshToken(token:string){
-
+export async function revokeRefreshToken(token: string) {
+  const rows = await db
+  .update(refreshTokens)
+  .set({
+    revokedAt: new Date()
+  })
+  .where(
+    eq(refreshTokens.token, token)
+  )
+  .returning();
+    if (rows.length === 0) {
+    throw new Error("Couldn't revoke token");
+  }
 }

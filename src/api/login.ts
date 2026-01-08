@@ -4,7 +4,7 @@ import { AuthorizationError, ClientError } from "./errors.js";
 import { checkPasswordHash, makeJWT, makeRefreshToken } from "../auth.js";
 import { respondWithJSON } from "./json.js";
 import { config } from "../config.js";
-import { saveRefreshToken } from "src/db/queries/refresh.js";
+import { saveRefreshToken } from "../db/queries/refresh.js";
 
 
 export async function handlerLogin(req: Request, res: Response) {
