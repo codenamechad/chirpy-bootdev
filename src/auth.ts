@@ -1,5 +1,5 @@
 import * as argon2 from "argon2"
-import { AuthorizationError, ClientError } from "./api/errors.js"
+import { AuthorizationError } from "./api/errors.js"
 import jwt from "jsonwebtoken"
 import { JwtPayload } from "jsonwebtoken";
 import  { Request } from "express";
@@ -60,7 +60,7 @@ export function validateJWT(tokenString: string, secret: string): string{
 export function getBearerToken(req: Request): string{
     const header = req.get("Authorization");
     if(!header){
-        throw new ClientError('Missing Authorization headers')
+        throw new AuthorizationError('Missing Authorization headers')
     }
     const trimmed = header.trim()
     const splitHeader = trimmed.split(' ')

@@ -8,7 +8,7 @@ import { handlerReadiness } from "./api/readiness.js";
 import { errorMiddleware, middlewareLogResponse, middlewareMetricsInc } from "./api/middleware.js";
 import { middlewareMetricsLog } from "./admin/metrics.js";
 import { handlerReset} from "./admin/reset.js";
-import { handlerUsersCreate } from "./api/users.js";
+import { handlerUpdateLogin, handlerUsersCreate } from "./api/users.js";
 import { handlerChirpsCreate, handlerGetChirpById, handlerGetChirps } from "./api/chirps.js";
 import { handlerLogin } from "./api/login.js";
 import { handlerRefresh, handlerRevoke } from "./api/auth.js";
@@ -43,6 +43,9 @@ app.post('/api/refresh', (req, res, next) => {
 })
 app.post('/api/revoke', (req, res, next) => {
   Promise.resolve(handlerRevoke(req, res)).catch(next)
+})
+app.put('/api/users', (req, res, next) => {
+  Promise.resolve(handlerUpdateLogin(req, res)).catch(next)
 })
 app.get("/api/healthz", handlerReadiness);
 app.use(errorMiddleware)
