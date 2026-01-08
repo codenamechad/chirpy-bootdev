@@ -1,9 +1,10 @@
 import type { Request, Response } from "express";
 import { getUserByEmail } from "../db/queries/users.js";
 import { AuthorizationError, ClientError } from "./errors.js";
-import { checkPasswordHash, makeJWT } from "../auth.js";
+import { checkPasswordHash, makeJWT, makeRefreshToken } from "../auth.js";
 import { respondWithJSON } from "./json.js";
 import { config } from "../config.js";
+import { saveRefreshToken } from "src/db/queries/refresh.js";
 
 
 export async function handlerLogin(req: Request, res: Response) {
@@ -31,12 +32,15 @@ export async function handlerLogin(req: Request, res: Response) {
     ? Math.min(expiresInSeconds, defaultDuration)
     : defaultDuration;
   const token = makeJWT(user.id, duration, secret)
+  const refreshToken = makeRefreshToken()
+  const saved = await saveRefreshToken(user.id, refreshToken)
 
   return respondWithJSON(res, 200, {
     id: user.id,
     email: user.email,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
-    token: token
+    token: token,
+    refreshToken: refreshToken,
   });
 }

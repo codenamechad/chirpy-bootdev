@@ -2,7 +2,8 @@ import * as argon2 from "argon2"
 import { AuthorizationError, ClientError } from "./api/errors.js"
 import jwt from "jsonwebtoken"
 import { JwtPayload } from "jsonwebtoken";
-import e, { Request } from "express";
+import  { Request } from "express";
+import crypto from "crypto"
 
 
 type payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
@@ -68,4 +69,9 @@ export function getBearerToken(req: Request): string{
         throw new AuthorizationError('Invalid token')
     }
     return filtered[1] 
+}
+
+export function makeRefreshToken(){
+    const encodedString = crypto.randomBytes(32).toString('hex');
+    return encodedString;
 }
